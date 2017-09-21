@@ -31,7 +31,7 @@ class MoviesController < ApplicationController
     if params[:sort]
       session['sort_type']=params[:sort]
     end
-    @movies = @movies.where(rating: params[:ratings].keys)
+    @movies = @movies.where(rating: params[:ratings].keys) if params[:ratings]
     if params[:sort]=='title'
       @movies = @movies.order(:title)
       @title_class = 'hilite'
