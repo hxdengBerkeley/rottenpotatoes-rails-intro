@@ -52,7 +52,6 @@ class MoviesController < ApplicationController
     #record the ratings_type and sort_type
     session['ratings']=params[:ratings]
     session['sort_type']=params[:sort]
-
   end
 
   def new
