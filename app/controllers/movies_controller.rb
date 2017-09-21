@@ -12,19 +12,29 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
     @movies = Movie.all
-    
-    #re-direct for RESTful
-    if params[:ratings].nil?||params[:sort].nil?
-      if params[:ratings].nil?
-        params[:ratings] = session['ratings']
-      end
-      if params[:sort].nil?
-        params[:sort] = session['sort_type']
-      end
-      redirect_to movies_path(params)
+    #RESTful design
+    redirect = false
+    if params[:sort]
+        @sorting = params[:sort]
+    elsif session[:sort]
+        @sorting = session[:sort]
+        redirect = true
     end
-
-    #record the ratings_type and sort_type
+    if params[:ratings]
+        @ratings = params[:ratings]
+    elsif session[:ratings]
+        @ratings = session[:ratings]
+        redirect = true
+    else
+        @all_ratings.each do |rat|
+            (@ratings ||= { })[rat] = 1
+        end
+        redirect = true
+    end
+    if redirect
+        redirect_to movies_path(:sort => @sorting, :ratings => @ratings)
+    end
+    #sort and ratings
     if params[:ratings]
       session['ratings']=params[:ratings]
     end
@@ -39,6 +49,10 @@ class MoviesController < ApplicationController
       @movies = @movies.order(:release_date)
       @release_date_class = 'hilite'
     end
+    #record the ratings_type and sort_type
+    session['ratings']=params[:ratings]
+    session['sort_type']=params[:sort]
+
   end
 
   def new
